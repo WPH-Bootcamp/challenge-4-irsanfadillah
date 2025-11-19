@@ -19,7 +19,7 @@ class StudentManager {
   // - students: Array untuk menyimpan semua siswa
   
   constructor() {
-    // Implementasi constructor di sini
+    this.students = [];
   }
 
   /**
@@ -29,7 +29,14 @@ class StudentManager {
    * TODO: Validasi bahwa ID belum digunakan
    */
   addStudent(student) {
-    // Implementasi method di sini
+    const exists = this.students.some(s => s.id === student.id);
+    if (exists) {
+      console.log('Gagal menambah siswa: ID sudah digunakan.');
+      return false;
+    }
+    this.students.push(student);
+    console.log('Siswa berhasil ditambahkan.');
+    return true;
   }
 
   /**
@@ -39,7 +46,10 @@ class StudentManager {
    * TODO: Cari dan hapus siswa dari array
    */
   removeStudent(id) {
-    // Implementasi method di sini
+    const index = this.students.findIndex(s => s.id === id);
+    if (index === -1)  return false;
+    this.students.splice(index, 1);
+    return true;
   }
 
   /**
@@ -49,7 +59,7 @@ class StudentManager {
    * TODO: Gunakan method array untuk mencari siswa
    */
   findStudent(id) {
-    // Implementasi method di sini
+    return this.students.find(s => s.id === id) || null;
   }
 
   /**
@@ -60,7 +70,12 @@ class StudentManager {
    * TODO: Cari siswa dan update propertinya
    */
   updateStudent(id, data) {
-    // Implementasi method di sini
+    const student = this.findStudent(id);
+    if (!student) return false;
+    if (data.name) student.name = data.name;
+    if (data.class) student.class = data.class;
+
+    return true;
   }
 
   /**
@@ -68,7 +83,7 @@ class StudentManager {
    * @returns {Array} Array berisi semua siswa
    */
   getAllStudents() {
-    // Implementasi method di sini
+    return this.students;
   }
 
   /**
@@ -78,7 +93,9 @@ class StudentManager {
    * TODO: Sort siswa berdasarkan rata-rata (descending) dan ambil n teratas
    */
   getTopStudents(n) {
-    // Implementasi method di sini
+    return this.students
+      .sort((a, b) => b.getAverage() - a.getAverage())
+      .slice(0, n);
   }
 
   /**
@@ -86,7 +103,12 @@ class StudentManager {
    * TODO: Loop semua siswa dan panggil displayInfo() untuk masing-masing
    */
   displayAllStudents() {
-    // Implementasi method di sini
+    if (this.students.length === 0) {
+      console.log('Tidak ada siswa dalam sistem.');
+      return;
+    }
+
+    this.students.forEach(student => student.displayInfo()); 
   }
 
   /**
@@ -95,7 +117,7 @@ class StudentManager {
    * @returns {Array} Array siswa dalam kelas tersebut
    */
   getStudentsByClass(className) {
-    // Implementasi method di sini (BONUS)
+    return this.students.filter(s => s.class === className);
   }
 
   /**
@@ -104,7 +126,18 @@ class StudentManager {
    * @returns {object} Object berisi statistik (jumlah siswa, rata-rata kelas, dll)
    */
   getClassStatistics(className) {
-    // Implementasi method di sini (BONUS)
+    const members = this.getStudentsByClass(className);
+    if (members.length === 0) {
+      return null;
+      
+      const avgClass = members.reduce((acc, s) => acc + s.getAverage(), 0) / members.length;
+      return {
+        kelas: className,
+        jumlahSiswa: members.length,
+        rataRataKelas: avgClass.toFixed(2),
+        statusKelulusan: avgClass >= 75 ? 'Lulus' : 'Tidak Lulus'
+      };
+    }
   }
 }
 
